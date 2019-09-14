@@ -1,0 +1,31 @@
+{
+  "name": "@novawei/devtool",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/novawei/devtool.git"
+  },
+  "keywords": [
+    "tomcat",
+    "java",
+    "vscode"
+  ],
+  "author": "novawei",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/novawei/devtool/issues"
+  },
+  "homepage": "https://github.com/novawei/devtool#readme",
+  "dependencies": {
+    "find-process": "^1.4.2",
+    "maven": "^4.7.0",
+    "recursive-copy": "^2.0.10",
+    "xml-js": "^1.6.11",
+    "yml": "^1.0.0"
+  }
+}

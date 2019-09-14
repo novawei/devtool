@@ -1,0 +1,25 @@
+tomcatPath: /Applications/apache-tomcat-8.5.45
+tomcatList:
+  - name: base
+    vmOptions: -server -Xms256m -Xmx512m
+    ports:
+      server: 8006
+      http: 8081
+      ajp: 8010
+      redirect: 8444
+    webapps:
+      - dfs: sf-dfs--web
+      - uc: sf-uc-web
+  - name: service
+    vmOptions: -server -Xms256m -Xmx512m
+    ports:
+      server: 8007
+      http: 8082
+      ajp: 8011
+      redirect: 8445
+    webapps:
+      - gift: sf-gift-service-web
+  - name: app
+    vmOptions: -server -Xms256m -Xmx512m
+    webapps:
+      - web: sf-web
