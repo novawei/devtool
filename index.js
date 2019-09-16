@@ -209,12 +209,17 @@ async function stopTomcat(projectDir, tomcatName, forceStop = true) {
     await sleep(1000)
     const p = await findProcess(`tomcat-${tomcatName}`)
     if (!p) {
+      console.log(`tomcat-${tomcatName} stopped!!!`)
       break
     } else {
-      process.kill(p.pid, 9)
+      if (p.pid) {
+        process.kill(p.pid, 9)
+      } else {
+        console.log('cannot get pid!!!')
+        break
+      }
     }
   }
-  console.log(`tomcat-${tomcatName} stopped!!!`)
 }
 
 async function deployWebapps(projectDir, tomcatName) {
