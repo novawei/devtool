@@ -127,6 +127,10 @@ function configServerXml(cnf, tomcatDir) {
 }
 
 async function configVmOptions(cnf, tomcatDir) {
+  if (!cnf.vmOptions || cnf.vmOptions == '') {
+    return
+  }
+
   const catalinaShPath = path.resolve(tomcatDir, 'bin', 'catalina.sh')
   let content = fs.readFileSync(catalinaShPath)
   content = `export JAVA_OPTS="${cnf.vmOptions}"\n${content}`
