@@ -45,8 +45,8 @@ async function execTomcatScript(tomcatDir, scriptName) {
   let bin = undefined
   let p = undefined
   if (isWinPlatform()) {
-    bin = path.resolve(tomcatDir, 'bin', `${scriptName}.bat`)
-    p = child_process.spawn('cmd.exe', ['/c', bin], {
+    p = child_process.spawn('cmd.exe', ['/c', `bin/${scriptName}.bat`], {
+      cwd: tomcatDir,
       detached: true,
       stdio: 'ignore'
     })
