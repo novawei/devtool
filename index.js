@@ -187,7 +187,7 @@ async function startTomcat(projectDir, tomcatName) {
   let tryCount = 5
   while(tryCount-- > 0) {
     await sleep(2000)
-    const p = await findProcess(`-Dcatalina.base=${tomcatDir}`)
+    const p = await findProcess(`tomcat-${tomcatName}`)
     if (p) {
       console.log(`tomcat-${tomcatName} started!!! pid: ${p.pid}`)
       break
@@ -205,7 +205,7 @@ async function stopTomcat(projectDir, tomcatName, forceStop = true) {
   // check process status
   while(forceStop) {
     await sleep(1000)
-    const p = await findProcess(`-Dcatalina.base=${tomcatDir}`)
+    const p = await findProcess(`tomcat-${tomcatName}`)
     if (!p) {
       break
     } else {
