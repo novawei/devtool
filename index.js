@@ -45,7 +45,8 @@ async function execTomcatScript(tomcatDir, scriptName) {
   let bin = undefined
   let p = undefined
   if (isWinPlatform()) {
-    p = child_process.spawn('cmd.exe', ['/c', `bin/${scriptName}.bat`], {
+    bin = path.resolve(tomcatDir, 'bin', `${scriptName}.bat`)
+    p = child_process.spawn('cmd.exe', ['/c', bin], {
       cwd: tomcatDir,
       detached: true,
       stdio: 'ignore'
@@ -83,6 +84,10 @@ function addExecPermission(tomcatDir) {
 }
 
 function configServerXml(cnf, tomcatDir) {
+  if (!cnf.ports) {
+    return
+  }
+
   const xmlPath = path.resolve(tomcatDir, 'conf', 'server.xml')
   let xmlContent = fs.readFileSync(xmlPath)
   const json = convert.xml2js(xmlContent)
@@ -94,8 +99,8 @@ function configServerXml(cnf, tomcatDir) {
     }
   }
   if (serverElem) {
-    if (cnf.serverPort) {
-      serverElem.attributes.port = cnf.serverPort
+    if (cnf.ports.server) {
+      serverElem.attributes.port = cnf.ports.server
     }
     let serviceElem = undefined
     for (let item of serverElem.elements) {
@@ -108,14 +113,14 @@ function configServerXml(cnf, tomcatDir) {
       for (let item of serviceElem.elements) {
         if (item.type === 'element' && item.name === 'Connector') {
           if (item.attributes.protocol.indexOf('HTTP') !== -1) {
-            if (cnf.httpPort) {
-              item.attributes.port = cnf.httpPort
+            if (cnf.ports.http) {
+              item.attributes.port = cnf.ports.http
             }
-          } else if (cnf.ajpPort) {
-              item.attributes.port = cnf.ajpPort
+          } else if (cnf.ports.ajp) {
+              item.attributes.port = cnf.ports.ajp
           }
-          if (cnf.redirectPort) {
-            item.attributes.redirectPort = cnf.redirectPort
+          if (cnf.ports.redirect) {
+            item.attributes.redirectPort = cnf.ports.redirect
           }
         }
       }
