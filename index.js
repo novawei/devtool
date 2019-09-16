@@ -201,7 +201,9 @@ async function stopTomcat(projectDir, tomcatName, forceStop = true) {
   if (!fs.existsSync(tomcatDir)) {
     console.error(`${tomcatDir} NOT EXIST!!!`)
   }
-  execTomcatScript(tomcatDir, 'shutdown')
+  if (!isWinPlatform()) {
+    execTomcatScript(tomcatDir, 'shutdown')
+  }
   // check process status
   while(forceStop) {
     await sleep(1000)
