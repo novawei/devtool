@@ -1,3 +1,6 @@
+jdbc:
+  dev: 127.0.0.1 
+  prod: 192.168.0.1
 tomcatPath: /Applications/apache-tomcat-8.5.45
 tomcatList:
   - name: base

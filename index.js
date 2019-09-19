@@ -271,6 +271,37 @@ async function deployWebapps(projectDir, tomcatName) {
   }
 }
 
+function changeJdbcProp(jdbcIp, dirpath) {
+  const files = fs.readdirSync(dirpath)
+  for (let file of files) {
+    const filepath = path.resolve(dirpath, file)
+    if (file == 'application.properties') {
+      let content = fs.readFileSync(filepath, {encoding: 'utf-8'})
+      const results = content.match(/mysql\\:\/\/(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\\:3306/g)
+      if (results && results.length > 0) {
+        const ip = results[0]
+        content = content.replace(ip, `mysql\\://${jdbcIp}\\:3306`)
+        fs.writeFileSync(filepath, content)
+      }
+    } else {
+      const stat = fs.statSync(filepath)
+      if (stat.isDirectory()) {
+        changeJdbcProp(jdbcIp, filepath)
+      }
+    }
+  }
+}
+
+function changeJdbc(projectDir, jdbcEnv) {
+  const ymlPath = path.resolve(projectDir, 'devcnf.yml')
+  const devcnf = yml.load(ymlPath)
+  const jdbcIp = devcnf.jdbc[jdbcEnv]
+  if (!jdbcIp) {
+    console.error(`jdbc config:${jdbcEnv} not found!!!`)
+  }
+  changeJdbcProp(jdbcIp, projectDir)
+}
+
 async function main() {
   const projectDir = process.cwd()
   const ymlPath = path.resolve(projectDir, 'devcnf.yml')
@@ -282,25 +313,28 @@ async function main() {
   // parse cmd argv
   const argv = process.argv.slice(2)
   const cmd = argv.shift()
-  const tomcatName = argv.shift()
+  const cmdParam1 = argv.shift()
   
   switch (cmd) {
     case 'init':
       initTomcats(projectDir)
       break
     case 'start':
-      startTomcat(projectDir, tomcatName)
+      startTomcat(projectDir, cmdParam1)
       break
     case 'stop':
-      stopTomcat(projectDir, tomcatName)
+      stopTomcat(projectDir, cmdParam1)
       break
     case 'restart':
-      await stopTomcat(projectDir, tomcatName)
+      await stopTomcat(projectDir, cmdParam1)
       await sleep(1000)
-      startTomcat(projectDir, tomcatName)
+      startTomcat(projectDir, cmdParam1)
       break
     case 'deploy':
-      deployWebapps(projectDir, tomcatName)
+      deployWebapps(projectDir, cmdParam1)
+      break
+    case 'change-jdbc':
+      changeJdbc(projectDir, cmdParam1)
       break
     default:
       console.log(`${cmd} not defined!`)
