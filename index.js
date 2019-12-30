@@ -302,6 +302,37 @@ function changeJdbc(projectDir, jdbcEnv) {
   changeJdbcProp(jdbcIp, projectDir)
 }
 
+function changeMongoProp(mongoIp, dirpath) {
+  const files = fs.readdirSync(dirpath)
+  for (let file of files) {
+    const filepath = path.resolve(dirpath, file)
+    if (file == 'application.properties') {
+      let content = fs.readFileSync(filepath, {encoding: 'utf-8'})
+      const results = content.match(/mongo\.host=(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/g)
+      if (results && results.length > 0) {
+        const ip = results[0]
+        content = content.replace(ip, `mongo.host=${mongoIp}`)
+        fs.writeFileSync(filepath, content)
+      }
+    } else {
+      const stat = fs.statSync(filepath)
+      if (stat.isDirectory()) {
+        changeMongoProp(jdbcIp, filepath)
+      }
+    }
+  }
+}
+
+function changeMongo(projectDir, mongoEnv) {
+  const ymlPath = path.resolve(projectDir, 'devcnf.yml')
+  const devcnf = yml.load(ymlPath)
+  const mongoIp = devcnf.mongo[mongoEnv]
+  if (!mongoIp) {
+    console.error(`mongo config:${mongoEnv} not found!!!`)
+  }
+  changeMongoProp(mongoIp, projectDir)
+}
+
 async function main() {
   const projectDir = process.cwd()
   const ymlPath = path.resolve(projectDir, 'devcnf.yml')
@@ -335,6 +366,9 @@ async function main() {
       break
     case 'change-jdbc':
       changeJdbc(projectDir, cmdParam1)
+      break
+    case 'change-mongo':
+      changeMongo(projectDir, cmdParam1)
       break
     default:
       console.log(`${cmd} not defined!`)
