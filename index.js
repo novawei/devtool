@@ -317,7 +317,7 @@ function changeMongoProp(mongoIp, dirpath) {
     } else {
       const stat = fs.statSync(filepath)
       if (stat.isDirectory()) {
-        changeMongoProp(jdbcIp, filepath)
+        changeMongoProp(mongoIp, filepath)
       }
     }
   }
